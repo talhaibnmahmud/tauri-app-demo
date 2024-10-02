@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
+import React, { useState } from "react";
 
 const formSchema = z.object({
   name: z
@@ -32,6 +33,17 @@ const formSchema = z.object({
 });
 
 function App() {
+  const [count, setCount] = React.useState(0);
+  const some = useState(0);
+  console.log(some);
+
+  React.useEffect(() => {
+    setCount((count) => count + 1);
+    console.log("Count:", count);
+    const multiplied = count * 2;
+    console.log("Multiplied:", multiplied);
+  }, [count]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema, { errorMap }),
     defaultValues: {
@@ -58,13 +70,13 @@ function App() {
       <h1 className="text-3xl text-center font-bold">Welcome to Tauri!</h1>
 
       <div className="flex items-center justify-center gap-10">
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src="/vite.svg" className="w-20" alt="Vite logo" />
         </a>
-        <a href="https://tauri.app" target="_blank">
+        <a href="https://tauri.app" target="_blank" rel="noreferrer">
           <img src="/tauri.svg" className="w-20" alt="Tauri logo" />
         </a>
-        <a href="https://reactjs.org" target="_blank">
+        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
           <img src={reactLogo} className="w-20" alt="React logo" />
         </a>
       </div>
