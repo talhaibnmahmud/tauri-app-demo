@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -19,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
-import React, { useState } from "react";
 
 const formSchema = z.object({
   name: z
@@ -33,11 +33,9 @@ const formSchema = z.object({
 });
 
 function App() {
-  const [count, setCount] = React.useState(0);
-  const some = useState(0);
-  console.log(some);
+  const [count, setCount] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCount((count) => count + 1);
     console.log("Count:", count);
     const multiplied = count * 2;

@@ -1,4 +1,5 @@
 import pluginJs from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
 import pluginReact from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import globals from "globals";
@@ -20,4 +21,5 @@ export default [
     settings: { react: { version: "detect" } },
   },
   { ignores: ["src-tauri/**", "src/components/ui/**/*.{js,ts,jsx,tsx}"] },
+  eslintConfigPrettier, // eslint-config-prettier last
 ];
