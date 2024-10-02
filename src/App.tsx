@@ -1,16 +1,56 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { invoke } from "@tauri-apps/api/tauri";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { errorMap } from "zod-validation-error";
 
-import "./App.css";
-import reactLogo from "./assets/react.svg";
+import "@/App.css";
+import reactLogo from "@/assets/react.svg";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Toaster } from "@/components/ui/sonner";
+
+const formSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Name must be at least 2 characters long" })
+    .max(50, { message: "Name must be less than 50 characters long" })
+    // Name can only contain letters, spaces and periods
+    .regex(/^[a-zA-Z\s.]*$/, {
+      message: "Name can only contain letters, spaces and periods",
+    }),
+});
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema, { errorMap }),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+    const msg = String(await invoke("greet", { name: values.name }));
+    toast("Geetings from Tauri", {
+      description: msg,
+      action: {
+        label: "Undo",
+        onClick: () => console.log("Undo"),
+      },
+    });
   }
 
   return (
@@ -31,28 +71,32 @@ function App() {
 
       <p>Click on the Tauri, Vite, and React logos to learn more.</p>
 
-      <form
-        className="flex items-center justify-center gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter your name..."
-          className="px-2 py-1 border rounded"
-        />
-        <button
-          type="submit"
-          className="px-2 py-1 rounded bg-green-500 text-white"
-        >
-          Greet
-        </button>
-      </form>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Enter your name to get a personalized greeting
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <p>{greetMsg}</p>
+          <Button type="submit" className="w-full">
+            Greet
+          </Button>
+        </form>
+      </Form>
+
+      <Toaster position="bottom-right" />
     </div>
   );
 }
